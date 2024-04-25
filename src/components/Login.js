@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./Header";
 
 const Login = () => {
+  const [isSignInForm, setIsSignInForm] = useState(true);
+  const handleSignInToggle = () => {
+    setIsSignInForm(!isSignInForm);
+  };
   return (
     <div className=" h-screen flex justify-center items-center">
       <Header />
@@ -12,8 +16,17 @@ const Login = () => {
         alt=""
         className="absolute z-0"
       ></img>
-      <form className="absolute w-3/12 h-1/2 text-white z-10 right-0 left-0 bg-black mx-auto p-4 bg-opacity-80 ">
-        <h1 className="text-3xl font-bold my-4">Sign In</h1>
+      <form className="absolute w-3/12 h-fit text-white z-10 right-0 left-0 bg-black mx-auto p-8 bg-opacity-80 ">
+        <h1 className="text-3xl font-bold my-4">
+          {isSignInForm ? "Sign In" : "Sign Up"}
+        </h1>
+        {!isSignInForm && (
+          <input
+            type="text"
+            placeholder="Username"
+            className="p-2 my-2 w-full rounded-lg bg-gray-500"
+          />
+        )}
         <input
           type="email"
           placeholder="Email or Phone Number"
@@ -26,10 +39,14 @@ const Login = () => {
         />
         <div>
           <button className="p-2 my-10 bg-red-600 w-full rounded-lg">
-            Sign In
+            {isSignInForm ? "Sign In" : "Sign Up"}
           </button>
         </div>
-        <p className="p-2">New to Netflix? Sign Up now</p>
+        <p className="p-2 cursor-pointer" onClick={handleSignInToggle}>
+          {isSignInForm
+            ? "New to Netflix? Sign Up now"
+            : "Already a user? Sign In now"}
+        </p>
       </form>
     </div>
   );
