@@ -8,5 +8,5 @@ export const isCredentialsValid = (email, password) => {
     return "Password is not valid";
   }
 
-  return;
+  return null;
 };
