@@ -1,9 +1,10 @@
-import { signOut } from "firebase/auth";
-import React from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import React, { useEffect } from "react";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { removeUser } from "../utils/userSlice";
+import { addUser, removeUser } from "../utils/userSlice";
+import { NETFLIX_LOGO, USER_AVATAR } from "../utils/constants";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -23,11 +24,29 @@ const Header = () => {
         navigate("/error");
       });
   };
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const { uid, email, displayName } = user;
+        dispatch(addUser({ uid: uid, email: email, displayName: displayName }));
+        navigate("/browse")
+      } else {
+        // User is signed out
+        dispatch(removeUser());
+        navigate('/')
+      }
+    });
+    // unsubscribe when the component unmounts
+    return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
   return (
     <div className="absolute w-screen top-0 left-0 z-10 bg-gradient-to-b from-black flex justify-between p-4">
       <img
         className="w-48"
-        src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
+        src={NETFLIX_LOGO}
         alt="netflix-logo"
       />
       {auth.currentUser && (
@@ -37,7 +56,7 @@ const Header = () => {
           </p>
           <img
             className="w-12 h-12 rounded-md"
-            src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png?20201013161117"
+            src={USER_AVATAR}
             alt="usericon"
           />
           <button
